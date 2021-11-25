@@ -1,15 +1,31 @@
 'use strict';
 
-menuOpen();
-changeNight();
+$(document).ready(function() {
+  preventDefaultAnchor();
+  scrollAnimate();
+  menuOpen();
+  changeNight();
+  mainImageSlide();
+  scrollFixed();
+  headerFixed();
+  setImageSlide('div.office-box ul.office-img', 1);
+});
+
+// a[href="#"] 기본 동작 방지(상단 이동)
+function preventDefaultAnchor() {
+  $(document).on('click', 'a[href="#"]', function(e) {
+    e.preventDefault();
+  });
+}
+
 
 //header menu toggle
 function menuOpen() {
   var menuBtn = document.querySelector('#header .menu-box')
 
   menuBtn.addEventListener('click', function() {
-    document.querySelector('#header .gnb-wrap').classList.toggle('active');
-    document.querySelector('#header .header-wrap').classList.toggle('active');
+  document.querySelector('#header .gnb-wrap').classList.toggle('active');
+  document.querySelector('#header .header-wrap').classList.toggle('active');
   });
 };
 
@@ -26,8 +42,6 @@ function changeNight () {
 
 
 //main-banner 넘기기
-mainImageSlide();
-
 function mainImageSlide() {
   var slideNow = 0;
   var slideFirst = 1;
@@ -51,17 +65,9 @@ function mainImageSlide() {
 
 
 //scrollFixed JS
-if (matchMedia("screen and (min-width: 990px)").matches) {
-  scrollFixed();
-  $(window).on('scroll', function() {
-    scrollFixed();
-  });
 
-  $(window).on('resize', function(){
-    scrollFixed();
-  });
-
-  function scrollFixed() {
+function scrollFixed() {
+  $(window).on('scroll resize', function() {
     var scrollAmt = $(document).scrollTop();
     var fixedStart = $('#main .content-2x').offset().top;
     var divHeight = $('#main .content-2x .content-l').height();
@@ -77,11 +83,12 @@ if (matchMedia("screen and (min-width: 990px)").matches) {
       $("#main .content-2x").removeClass("fixed");
       $("#main .content-2x").addClass("fixedEnd");
     }
-  }
+  });
 }
 
 
-if (matchMedia("screen and (max-width: 768px)").matches) {
+
+function headerFixed() {
   $(window).scroll(function(){ 
     var scroll = $(document).scrollTop(); 
     if(scroll > 40){ 
@@ -90,16 +97,17 @@ if (matchMedia("screen and (max-width: 768px)").matches) {
     else { 
       $("#header").removeClass("fixed");
     }
-    });
-} 
+  });
+}  
+  
 
 
 //하단 슬라이드 넘기기
-setImageSlide();
+
 
 function setImageSlide(selector ,first) {
   var $selector = $(selector);
-  var numSlide = $selector.find('.div.office-box .office-img li').length;
+  var numSlide = $selector.find('li').length;
   var slideNow = 0;
   var slidePrev = 0;
   var slideNext = 0;
@@ -108,100 +116,138 @@ function setImageSlide(selector ,first) {
   var delX = 0;
   var startX = 0;
   var offsetX = 0;
+  var boxWidth = 0;
+  var barWidth = 0;
+  var offsetLeft = 0;
+  var minOffsetLeft = 0;
+  var isBlocked = true;
+  var counter = 0;
 
-  $('div.office-box .office-img').on('mousedown', function(e) {
+  resetUI();
+  showSlide(slideFirst);
+
+  $selector.parent().find('.control a.prev').on('click', function() {
+    if (offsetLeft >= 0) {
+      $selector.find('ul.office-img').css({'transition': 'none'}).stop(true).animate({'left': '10px'}, 80).animate({'left': 0}, 160, function() {
+        showSlide(slideNow);
+      });
+    } else {
+      showSlide(slidePrev);
+    }
+  });
+
+  $selector.parent().find('.control a.next').on('click', function() {
+    if (offsetLeft <= minOffsetLeft) {
+      $selector.find('ul.office-img').css({'transition': 'none'}).stop(true).animate({'left': (minOffsetLeft - 10) + 'px'}, 80).animate({'left': minOffsetLeft + 'px'}, 160, function() {
+        showSlide(slideNow);
+      });
+    } else {
+      showSlide(slideNext);
+    }
+  });
+
+
+
+  $selector.on('touchstart', function(e) {
     e.preventDefault();
-    startX = e.clientX;
+    startX = e.touches[0].clientX;
     offsetX = $(this).position().left;
     $(this).css({'transition': 'none'})
     
-    $(document).on('mousemove', function(e) {
-      delX = e.clientX - startX;
+    $(document).on('touchmove', function(e) {
+      delX = e.touches[0].clientX - startX;
+      if(Math.abs(delX) > 5) isBlocked = true;
       if((slideNow === 1 && delX > 0) || (slideNow === numSlide && delX < 0)) {
         delX = delX / 10;
       }
-      $('div.office-box .office-img').css({'left': (offsetX + delX) + 'px'});
+      $selector.css({'left': (offsetX + delX) + 'px'});
+
+      $(document).on('touchend', function(e) {
+        $(document).off('touchmove touchend');
+        if (delX < -50 && slideNow != numSlide) {
+          if(offsetLeft <= minOffsetLeft) {
+            $selector.css({'transition': 'none'}).stop(true).animate({'left': (minOffsetLeft - 10) + 'px'}, 80).animate({'left': minOffsetLeft + 'px'}, 160, function() {
+              showSlide(slideNow);
+            });
+          } else {
+            showSlide(slideNext);
+          }
+        } else if (delX > 50 && slideNow != 1) {
+          if (offsetLeft >= 0) {
+            $selector.css({'transition': 'none'}).stop(true).animate({'left': '10px'}, 80).animate({'left': 0}, 160, function() {
+              showSlide(slideNow);
+            });
+          } else {
+            showSlide(slidePrev);
+          }
+        } else {
+          showSlide(slideNow);
+        }
+        delX = 0;
+      });
     });
+  });
 
-    $(document).on('mouseup', function(e) {
-      if(delX < -50 && slideNow !== numSlide) {
-        showSlide(slideNext);
-      } else if (delX > 50 && slideNow !== 1) {
-        showSlide(slidePrev);
-      } else {
-        showSlide(slideNow);
-      }
-      $(document).off('mousemove mouseup');
+  $(window).on('resize', function() {
+    if (counter > 10) {
+      resetUI();
+      showSlide(slideNow);
+      counter = 0;
+    }
+    counter++;
+  })
+
+  function resetUI() {
+    boxWidth = $selector.parent('div.office-box').outerWidth(true);
+    barWidth = 0;
+    $selector.find('li').each(function() {
+      barWidth += $(this).outerWidth(true);
     });
-    console.log(delX + '/' + startX + '/' + offsetX)
-  });
-
-  $selector.find('div.office-box .office-img li').each(function(i) {
-    //슬라이드 옆으로 넘기는거 같은 효과, 모든 slide 옆으로 배열
-    $(this).css({'left': (i * 100) + '%', 'display': 'block'});
-    //indicator 자동으로 넣기
-    $selector.find('.indicator').append('<li><a href="#">'+ (i + 1) +'번 슬라이드</a></li>\n')
-  });
-
-
-  showSlide(slideFirst);
-
-  $selector.find('.indicator li a').on('click', function() {
-    var index = $selector.find('.indicator li a').index($(this).parent());
-    showSlide(index + 1);
-  });
-
-  $selector.find('office-box .control .a.prev').on('click', function() {
-    showSlide(slidePrev);
-  });
-
-  $selector.find('office-box .control a.next').on('click', function() {
-    showSlide(slideNext);
-  });
-
+    $selector.css({'width': (barWidth + 10) + 'px'});
+    minOffsetLeft = boxWidth - barWidth;
+  }
 
   function showSlide(n) {
     // slide 옆으로 넘기는 효과
-    if(slideNow === 0) {
-      $selector.find('div.office-box .office-img').css({'transition': 'none','left': -((n-1) * 100) + '%'});
-    } else {
-      $selector.find('div.office-box .office-img').css({'transition': 'left 0.5s','left': -((n-1) * 100) + '%'});
-    };
-    $selector.find('.indicator li').removeClass('on');
-    $selector.find('.indicator li:eq(' + (n - 1) + ')').addClass('on');
+    offsetLeft = -$selector.find('li:eq(' + (n - 1) + ')').position().left;
+    if (offsetLeft < minOffsetLeft) {
+      offsetLeft = minOffsetLeft;
+      numSlide = n;
+    }
+    $selector.css({'transition': 'left 0.5s', 'left': offsetLeft + 'px'});
     slideNow = n;
-    slidePrev = (n === 1) ? numSlide : (n - 1);
-    slideNext = (n === numSlide) ? 1 : (n + 1);
-    console.log(slidePrev + ' / ' + slideNow + ' / ' + slideNext);
+    slidePrev = (n <= 1) ? numSlide : (n - 1);
+    slideNext = (n > numSlide) ? 1 : (n + 1);
   }
 }
 
 //스크롤시 animate
 
-$('#main .content-2x .content-r .content-r-fixed').children().addClass('up-scroll');
-$('#main .content-2x .content-l').children().addClass('up-scroll');
-$('#main .brand-article').children().addClass('up-scroll');
-$('#main .go-brand').children().addClass('up-scroll');
-$('#main .office-box .office-img').children().addClass('up-scroll');
+function scrollAnimate() {
+  $('#main .content-2x .content-r .content-r-fixed').children().addClass('up-scroll');
+  $('#main .content-2x .content-l').children().addClass('up-scroll');
+  $('#main .brand-article').children().addClass('up-scroll');
+  $('#main .go-brand').children().addClass('up-scroll');
+  $('#main .office-box .office-img').children().addClass('up-scroll');
 
+  function isElementUnderBottom(elem, triggerDiff) {
+    const { top } = elem.getBoundingClientRect();
+    const { innerHeight } = window;
+    return top > innerHeight + (triggerDiff || 0);
+  }
 
-function isElementUnderBottom(elem, triggerDiff) {
-  const { top } = elem.getBoundingClientRect();
-  const { innerHeight } = window;
-  return top > innerHeight + (triggerDiff || 0);
+  function handleScroll() {
+    const elems = document.querySelectorAll('.up-scroll');
+    elems.forEach(elem => {
+      if (isElementUnderBottom(elem, -20)) {
+        elem.style.opacity = "0";
+        elem.style.transform = 'translateY(70px)';
+      } else {
+        elem.style.opacity = "1";
+        elem.style.transform = 'translateY(0px)';
+      }
+    })
+  }
+  window.addEventListener('scroll', handleScroll);
 }
 
-function handleScroll() {
-  const elems = document.querySelectorAll('.up-scroll');
-  elems.forEach(elem => {
-    if (isElementUnderBottom(elem, -20)) {
-      elem.style.opacity = "0";
-      elem.style.transform = 'translateY(70px)';
-    } else {
-      elem.style.opacity = "1";
-      elem.style.transform = 'translateY(0px)';
-    }
-  })
-}
-
-window.addEventListener('scroll', handleScroll);

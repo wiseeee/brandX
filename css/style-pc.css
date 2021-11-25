@@ -151,8 +151,9 @@ body {font-family: 'Montserrat', 'NotoSansKR', sans-serif;  font-size: 16px; bac
 #main .go-brand > li:nth-child(4) .logo {width: 125px;}
 
 #main .office-box .orange-txt {padding-bottom: 20px;}
-#main .office-box {position: relative;  overflow: hidden;  margin-left: 100px; box-sizing: border-box; }
-#main .office-box .office-img { width: 40000px; overflow: hidden;}
+#main .office-box {position: relative;  overflow: hidden;  margin-left: 100px; box-sizing: border-box; width: calc(100vw - 254px);}
+#main .office-box .dummy {width: 60vw; height: 100%; opacity: 0;}
+#main .office-box .office-img {overflow: hidden; position: absolute; left: 0; top: 34px;}
 #main .office-box .office-img > li {display: inline-block; margin-right: 40px; width: 60vw;}
 #main .office-box .office-img > li > img {display: block; width: 100%; }
 #main .office-box .indicator {position: absolute; left: 0; bottom: 10px; width: 100%; text-align: center;}
@@ -163,7 +164,7 @@ body {font-family: 'Montserrat', 'NotoSansKR', sans-serif;  font-size: 16px; bac
 #main .office-box .control a.prev,
 #main .office-box .control a.next {position: absolute; top: 0; width: 30px; height: 100%;}
 #main .office-box .control a.prev {left: 0;}
-#main .office-box .control a.next {right: 0;}
+#main .office-box .control a.next {right: 10vw;}
 #main .office-box .control a > img {position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);}
 
 
@@ -212,6 +213,7 @@ body {font-family: 'Montserrat', 'NotoSansKR', sans-serif;  font-size: 16px; bac
   #main .content-2x .content-l img:nth-child(2) {float: left;}
   #main .content-2x .content-l img:nth-child(4) {margin-top: 50px; float: left;}
   #main .brand-article {padding-left: 5%; }
+  #main .office-box {width: calc(100vw - 200px);}
   #footer { margin-left: 100px;}
 }
 
