@@ -125,6 +125,21 @@ function setImageSlide(selector ,first) {
 
   resetUI();
   showSlide(slideFirst);
+  progressBar();
+
+  
+
+  function progressBar() {
+      var leftOffset = $selector.find('li').position().left;
+      var width = $selector.parent().find('div.progress-container').outerWidth(true);
+      var scrolled = (leftOffset / width) * 100;
+
+      if(leftOffset > 0) {
+        $selector.parent().find('.progress-container .progress-bar').css({'width': scrolled + '%'})
+      } else {
+        
+      }
+  }
 
   $selector.parent().find('.control a.prev').on('click', function() {
     if (offsetLeft >= 0) {

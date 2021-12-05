@@ -152,15 +152,12 @@ body {font-family: 'Montserrat', 'NotoSansKR', sans-serif;  font-size: 16px; bac
 
 #main .office-box .orange-txt {padding-bottom: 20px;}
 #main .office-box {position: relative;  overflow: hidden;  margin-left: 100px; box-sizing: border-box; width: calc(100vw - 254px);}
-#main .office-box .dummy {width: 60vw; height: 100%; opacity: 0;}
-#main .office-box .office-img {overflow: hidden; position: absolute; left: 0; top: 34px;}
+#main .office-box .dummy {width: 60vw; height: 100%; opacity: 0; padding-bottom: 50px;}
+#main .office-box .office-img {overflow: hidden; position: absolute; left: 0; top: 34px;  font-size: 0px;}
 #main .office-box .office-img > li {display: inline-block; margin-right: 40px; width: 60vw;}
 #main .office-box .office-img > li > img {display: block; width: 100%; }
-#main .office-box .indicator {position: absolute; left: 0; bottom: 10px; width: 100%; text-align: center;}
-#main .office-box .indicator > li {display: inline-block; vertical-align: top;}
-#main .office-box .indicator > li + li {margin-left: 8px;}
-#main .office-box .indicator > li > a {display: inline-block; width: 10px; height: 10px; border: 2px solid rgba(255, 255, 255, 0.6); border-radius: 40px; text-indent: -9999px; overflow: hidden; transition: all 0.3s;}
-#main .office-box .indicator > li.on > a {width: 25px; border-color: #ffffff; background-color: #ffffff;}
+#main .office-box .progress-container {width: 60vw; height: 1px; background-color: #ddd;}
+#main .office-box .progress-container .progress-bar {height: 1px; background-color: #393939; }
 #main .office-box .control a.prev,
 #main .office-box .control a.next {position: absolute; top: 0; width: 30px; height: 100%;}
 #main .office-box .control a.prev {left: 0;}
